@@ -4,7 +4,7 @@ import ImageFallback from "../../components/ImageFallback"; // relative path
 
 export async function generateMetadata({ params }) {
   const base = process.env.NEXT_PUBLIC_BASE_URL || "";
-  const res = await fetch(`${base}/api/products/${params.id}`, { cache: "no-store" });
+  const res = await fetch(`/api/products/${params.id}`, { cache: "no-store" });
   if (!res.ok) return { title: "Product | Your Shop" };
   const p = await res.json();
   return { title: `${p.name} | Your Shop` };
@@ -12,7 +12,7 @@ export async function generateMetadata({ params }) {
 
 async function getProduct(id) {
   const base = process.env.NEXT_PUBLIC_BASE_URL || "";
-  const res = await fetch(`${base}/api/products/${id}`, { cache: "no-store" });
+  const res = await fetch(`/api/products/${id}`, { cache: "no-store" });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error("Failed to load product");
   return res.json();

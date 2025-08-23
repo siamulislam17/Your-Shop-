@@ -5,7 +5,7 @@ export const metadata = { title: "Products | Your Shop" };
 
 async function getProducts() {
   const base = process.env.NEXT_PUBLIC_BASE_URL || "";
-  const res = await fetch(`${base}/api/products`, { cache: "no-store" });
+  const res = await fetch(`/api/products`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to load products");
   return res.json();
 }

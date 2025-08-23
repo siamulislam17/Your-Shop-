@@ -22,7 +22,7 @@ export default function Page() {
     if (!v.name || !v.price) return toast.error('Name & Price are required');
     setSubmitting(true);
     try {
-      const res = await fetch(`${BASE}/api/products`, {
+      const res = await fetch(`/api/products`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
