@@ -21,6 +21,9 @@ export async function GET() {
   return Response.json(data);
 }
 
+
+
+
 export async function POST(req) {
   try {
     await connectDB();
