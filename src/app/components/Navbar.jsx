@@ -1,9 +1,12 @@
+// src/app/components/Nav/Navbar.jsx
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation'; // <-- add useRouter
 import { useState } from 'react';
 import { FaBars, FaTimes, FaStore, FaUser } from 'react-icons/fa';
+import { useSession, signOut } from 'next-auth/react';
+import toast from 'react-hot-toast';
 
 const LINKS = [
   { href: '/', label: 'Home' },
@@ -13,11 +16,24 @@ const LINKS = [
 ];
 
 export default function Navbar() {
+  const router = useRouter();                         // <-- add
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { data: session, status } = useSession();
 
   const isActive = (href) =>
     pathname === href || (href !== '/' && pathname?.startsWith(href));
+
+  // one place to handle logout
+  async function handleLogout() {
+    try {
+      await signOut({ redirect: false });             // <-- no auto-redirect
+      toast.success('Logged out successfully');       // <-- toast will render
+      router.push('/');                               // <-- then navigate
+    } catch {
+      toast.error('Failed to logout');
+    }
+  }
 
   return (
     <nav className="sticky top-0 z-50 border-b border-cyan-700/20 bg-cyan-600 text-white backdrop-blur">
@@ -45,7 +61,6 @@ export default function Navbar() {
                     `}
                   >
                     {label}
-                    {/* animated underline */}
                     <span
                       className={`
                         pointer-events-none absolute inset-x-2 -bottom-0.5 h-0.5 rounded-full
@@ -60,14 +75,25 @@ export default function Navbar() {
             })}
           </ul>
 
-          {/* Right (desktop) */}
+          {/* Right (desktop): Login/Logout */}
           <div className="hidden items-center gap-3 md:flex">
-            <Link
-              href="/login"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-cyan-700 shadow-sm ring-1 ring-inset ring-white/30 transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white"
-            >
-              <FaUser /> Login
-            </Link>
+            {status === 'loading' ? (
+              <div className="h-9 w-24 animate-pulse rounded-xl bg-white/20" />
+            ) : session ? (
+              <button
+                onClick={handleLogout}                // <-- use handler
+                className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-white/30 transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-cyan-700 shadow-sm ring-1 ring-inset ring-white/30 transition hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white"
+              >
+                <FaUser /> Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile toggle */}
@@ -105,13 +131,29 @@ export default function Navbar() {
           })}
 
           <li className="pt-2">
-            <Link
-              href="/login"
-              onClick={() => setOpen(false)}
-              className="block rounded-lg bg-white px-3 py-2 text-center text-sm font-semibold text-cyan-700 shadow-sm transition hover:bg-white/90"
-            >
-              Login
-            </Link>
+            {status === 'loading' ? (
+              <div className="h-9 w-full animate-pulse rounded-lg bg-white/20" />
+            ) : session ? (
+              <button
+                onClick={async () => {
+                  setOpen(false);
+                  await signOut({ redirect: false });
+                  toast.success('Logged out successfully');
+                  router.push('/');
+                }}
+                className="block w-full rounded-lg bg-white px-3 py-2 text-center text-sm font-semibold text-cyan-700 shadow-sm transition hover:bg-white/90"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                className="block rounded-lg bg-white px-3 py-2 text-center text-sm font-semibold text-cyan-700 shadow-sm transition hover:bg-white/90"
+              >
+                Login
+              </Link>
+            )}
           </li>
         </ul>
       </div>
