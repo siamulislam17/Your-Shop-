@@ -18,7 +18,7 @@ export default function Banner() {
           <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
             Your Shop, simplified.
           </h1>
-          <p className="mt-4 max-w-xl text-base text-gray-600">
+          <p className="mt-4 max-w-xl text- text-gray-600">
             Quality products with clear pricing and a smooth experience.
           </p>
         </div>

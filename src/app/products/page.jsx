@@ -1,55 +1,58 @@
-import Link from "next/link";
-import ImageFallback from "../components/ImageFallback"; // relative path from /products
+'use client';
 
-export const metadata = { title: "Products | Your Shop" };
+import { useEffect, useState } from 'react';
+import Banner from './components/Banner';
 
-async function getProducts() {
-  const base = process.env.NEXT_PUBLIC_BASE_URL || "";
-  const res = await fetch(`/api/products`, { cache: "no-store" });
-  if (!res.ok) throw new Error("Failed to load products");
-  return res.json();
-}
+export default function Home() {
+  const [items, setItems] = useState(null); // null=loading, []=empty
 
-export default async function ProductsPage() {
-  const items = await getProducts();
-  const FALLBACK =
-    "https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?q=80&w=1600&auto=format&fit=crop";
+  useEffect(() => {
+    let on = true;
+    (async () => {
+      try {
+        const res = await fetch('/api/products', { cache: 'no-store' });
+        const data = res.ok ? await res.json() : [];
+        if (on) setItems(data);
+      } catch {
+        if (on) setItems([]);
+      }
+    })();
+    return () => { on = false; };
+  }, []);
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-10">
-      <h1 className="mb-6 text-3xl font-bold">All Products</h1>
+    <div>
+      <Banner />
+      <section className="mx-auto max-w-6xl px-4 py-10">
+        <h2 className="mb-4 text-xl font-semibold">Latest products</h2>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((p) => (
-          <Link
-            key={p.id}
-            href={`/products/${p.id}`}
-            className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
-          >
-            <div className="h-44 w-full overflow-hidden">
-              <ImageFallback
-                src={p.image}
-                alt={p.name}
-                fallback={FALLBACK}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            </div>
+        {items === null && (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-48 animate-pulse rounded-2xl bg-gray-200" />
+            ))}
+          </div>
+        )}
 
-            <div className="p-5">
-              <h3 className="line-clamp-1 text-lg font-semibold text-gray-900 group-hover:text-cyan-700">
-                {p.name}
-              </h3>
-              
-              <div className="mt-3 flex items-center justify-between">
-                <span className="font-semibold text-cyan-700">
-                  ${Number(p.price).toFixed(2)}
-                </span>
-               
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </main>
+        {items && items.length === 0 && <p className="text-gray-600">No products yet.</p>}
+
+        {items && items.length > 0 && (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {items.slice(0, 6).map(p => (
+              <article key={p.id} className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div className="h-44 w-full overflow-hidden">
+                  <img src={p.image} alt={p.name} className="h-full w-full object-cover" loading="lazy" />
+                </div>
+                <div className="p-5">
+                  <h3 className="line-clamp-1 text-lg font-semibold">{p.name}</h3>
+                  <p className="mt-1 text-sm text-gray-600">{p.category}</p>
+                  <p className="mt-2 font-semibold">${Number(p.price).toFixed(2)}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
   );
 }

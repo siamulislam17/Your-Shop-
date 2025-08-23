@@ -17,7 +17,7 @@ export default function Page() {
   });
 
   async function onSubmit(e) {
-    const BASE = process.env.NEXT_PUBLIC_BASE_URL || '';
+    
     e.preventDefault();
     if (!v.name || !v.price) return toast.error('Name & Price are required');
     setSubmitting(true);

@@ -5,7 +5,7 @@ import Banner from "./components/Banner";
 export const metadata = { title: "Home | Your Shop" };
 
 async function getProducts() {
-  const base = process.env.NEXT_PUBLIC_BASE_URL || "";
+  // Fetch products from the API
   const res = await fetch(`/api/products`, { cache: "no-store" });
   if (!res.ok) return [];
   return res.json();
