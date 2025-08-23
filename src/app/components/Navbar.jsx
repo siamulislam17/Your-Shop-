@@ -13,6 +13,7 @@ const LINKS = [
   { href: '/about', label: 'About' },
   { href: '/blogs', label: 'Blogs' },
   { href: '/products', label: 'Products' },
+  { href: '/dashboard', label: 'Dashboard' }
 ];
 
 export default function Navbar() {

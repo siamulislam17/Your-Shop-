@@ -9,4 +9,14 @@ const ProductSchema = new mongoose.Schema({
   rating: { type: Number, default: 4.5, min: 0, max: 5 },
 }, { timestamps: true });
 
+ProductSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: (_, ret) => {
+    ret.id = ret._id.toString();
+    delete ret._id;
+  },
+});
+
+// Avoid OverwriteModelError on Vercel’s lambdas
 export default mongoose.models.Product || mongoose.model('Product', ProductSchema);
