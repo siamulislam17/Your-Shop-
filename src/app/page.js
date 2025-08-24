@@ -21,11 +21,12 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
+    <main className="mx-auto  px-4 md:px-0 pb-10">
       <Banner></Banner>
 
 
-     {/* Latest products */}
+     <section className="max-w-6xl mx-auto mt-10">
+      {/* Latest products */}
         <h1 className="mb-4 text-2xl font-semibold">Latest Products</h1>
 
         {items === null ? (
@@ -95,6 +96,7 @@ export default function Home() {
             ))}
           </ul>
         )}
+     </section>
 
     </main>
   );

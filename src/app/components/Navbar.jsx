@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation'; // <-- add useRouter
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FaBars, FaTimes, FaStore, FaUser } from 'react-icons/fa';
 import { useSession, signOut } from 'next-auth/react';
@@ -13,11 +13,11 @@ const LINKS = [
   { href: '/about', label: 'About' },
   { href: '/blogs', label: 'Blogs' },
   { href: '/products', label: 'Products' },
-  { href: '/dashboard', label: 'Dashboard' }
+  { href: '/dashboard', label: 'Dashboard', auth: true }, // <-- requires login
 ];
 
 export default function Navbar() {
-  const router = useRouter();                         // <-- add
+  const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { data: session, status } = useSession();
@@ -25,12 +25,20 @@ export default function Navbar() {
   const isActive = (href) =>
     pathname === href || (href !== '/' && pathname?.startsWith(href));
 
-  // one place to handle logout
+  // If a link needs auth and user is not logged in, send to login with callback
+  const getTargetHref = (href, auth) => {
+    if (auth && !session) {
+      const cb = encodeURIComponent(href);
+      return `/login?callbackUrl=${cb}`;
+    }
+    return href;
+  };
+
   async function handleLogout() {
     try {
-      await signOut({ redirect: false });             // <-- no auto-redirect
-      toast.success('Logged out successfully');       // <-- toast will render
-      router.push('/');                               // <-- then navigate
+      await signOut({ redirect: false });
+      toast.success('Logged out successfully');
+      router.push('/');
     } catch {
       toast.error('Failed to logout');
     }
@@ -48,12 +56,13 @@ export default function Navbar() {
 
           {/* Desktop links */}
           <ul className="hidden items-center gap-1 md:flex">
-            {LINKS.map(({ href, label }) => {
+            {LINKS.map(({ href, label, auth }) => {
+              const target = getTargetHref(href, auth);
               const active = isActive(href);
               return (
                 <li key={href}>
                   <Link
-                    href={href}
+                    href={target}
                     aria-current={active ? 'page' : undefined}
                     className={`
                       group relative rounded-lg px-3 py-2 text-sm font-medium transition
@@ -82,7 +91,7 @@ export default function Navbar() {
               <div className="h-9 w-24 animate-pulse rounded-xl bg-white/20" />
             ) : session ? (
               <button
-                onClick={handleLogout}                // <-- use handler
+                onClick={handleLogout}
                 className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-white/30 transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white"
               >
                 Logout
@@ -112,12 +121,13 @@ export default function Navbar() {
       {/* Mobile sheet */}
       <div className={`md:hidden ${open ? 'block' : 'hidden'} border-t border-cyan-700/20 bg-cyan-600/95 backdrop-blur`}>
         <ul className="space-y-1 px-4 py-3">
-          {LINKS.map(({ href, label }) => {
+          {LINKS.map(({ href, label, auth }) => {
+            const target = getTargetHref(href, auth);
             const active = isActive(href);
             return (
               <li key={href}>
                 <Link
-                  href={href}
+                  href={target}
                   onClick={() => setOpen(false)}
                   aria-current={active ? 'page' : undefined}
                   className={`

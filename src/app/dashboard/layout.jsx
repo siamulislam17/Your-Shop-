@@ -1,3 +1,4 @@
+// app/dashboard/layout.jsx  (your current file)
 'use client';
 
 import { useState } from 'react';
@@ -7,8 +8,8 @@ import { FaHome, FaPlus, FaBoxOpen, FaBars, FaTimes } from 'react-icons/fa';
 
 const NAV = [
   { label: 'Dashboard', href: '/dashboard', icon: FaHome },
-  { label: 'All Products', href: '/products', icon: FaBoxOpen },
-  { label: 'Add Product', href: '/dashboard/add-product', icon: FaPlus }, // <-- dashboard route
+
+  { label: 'Add Product', href: '/dashboard/add-products', icon: FaPlus },    
   { label: 'Return Home', href: '/', icon: FaHome },
 ];
 
@@ -33,9 +34,9 @@ export default function DashboardLayout({ children }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen mt-20 bg-gray-50">
       {/* fixed sidebar (md+) */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-gray-200 bg-white p-3 shadow-sm md:block">
+      <aside className="fixed inset-y-0 mt-17 left-0 max-h-screen z-30 hidden w-64 border-r border-gray-200 bg-white p-3 shadow-sm md:block">
         <div className="sticky top-3">
           <nav className="space-y-1">
             {NAV.map((i) => (
@@ -46,7 +47,7 @@ export default function DashboardLayout({ children }) {
       </aside>
 
       {/* content padded so it never hides under the sidebar */}
-      <div className="md:pl-64">
+      <div className="md:pl-64 ">
         {/* mobile menu button */}
         <div className="p-4 md:hidden">
           <button
@@ -57,7 +58,7 @@ export default function DashboardLayout({ children }) {
           </button>
         </div>
 
-        <main className="mx-auto max-w-7xl px-4 pb-8">{children}</main>
+        <main className="mx-auto max-w-7xl bg-white px-4 pb-8">{children}</main>
       </div>
 
       {/* mobile drawer */}
